@@ -1,2 +1,2 @@
-# AplikasiPengelolaanDataBuku
-# Dibuat Menggunakan Bahasa Pemrograman Pascal
+AplikasiPengelolaanDataBuku
+Dibuat Menggunakan Bahasa Pemrograman Pascal
