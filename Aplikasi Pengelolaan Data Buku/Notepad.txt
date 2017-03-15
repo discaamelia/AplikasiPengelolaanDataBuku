@@ -1,0 +1,661 @@
+program DataBuku;
+{I.s . User memasukkan Kode, Judul, Genre, Pengarang dan Harga Buku}
+{F.s . Menampilkan Data Buku sesuai Kode}
+uses crt;
+const
+   MaksB = 30;
+type d_Buku = record
+              Harga              : integer;
+              Judul,Pengarang    : string[15];
+              Genre,Kode         : string[8];
+     end;
+     Buku = array [1..MaksB] of d_Buku;
+var
+   B                               : Buku;
+   i,Pilih                         : integer;
+   JumlahData,JumlahData1          : Integer;
+
+//-------------------------------Menu Pilihan-----------------------------------
+procedure MenuPilihan(var Pilih : integer);
+{I.s . User memasukkan sebuah pilihan }
+{F.s . menampilkan isi menu pilihan }
+begin
+     textbackground(1);
+     //tampilan menu pilihan
+     clrscr;
+     textbackground(white);
+     textcolor(blue);
+     gotoxy(29,5);writeln('-------* Menu Pilihan *--------');
+     gotoxy(25,7);writeln('');
+     gotoxy(25,8);writeln('+-----------------**+**-----------------+');
+     gotoxy(25,9);writeln('! 1. Lihat Data Buku                    !');
+     gotoxy(25,10);writeln('! 2. Pencarian                          !');
+     gotoxy(25,11);writeln('! 3. Tambah Data Buku                   !');
+     gotoxy(25,12);writeln('! 4. Hapus Data Buku                    !');
+     gotoxy(25,13);writeln('! 5. Edit Data Buku                     !');
+     gotoxy(25,14);writeln('! 6. Filter Data                        !');
+     gotoxy(25,15);writeln('! 7. Tampil Urut Buku                   !');
+     gotoxy(25,16);writeln('! 0. Keluar                             !');
+     gotoxy(25,17);writeln('+-----------------**+**-----------------+');
+     gotoxy(25,18);write('');
+     gotoxy(25,20);write('Pilihan Yang anda Pilih : ');readln(Pilih);
+    //validasi
+    while (Pilih > 10) do
+       begin
+         gotoxy(25,21);write('Pilihan anda tidak terdaftar , ulangi !');readln;
+         gotoxy(25,22);clreol;
+         gotoxy(25,23);write('Pilihan Yang anda Pilih : ');readln(Pilih);
+       end;
+end;
+//-------------------------------Menu Pilihan-----------------------------------
+
+//--------------------------------Lihat Data------------------------------------
+Procedure LihatData(var B : Buku; var jumlahdata:integer; a,page:integer );
+var
+   code,n,j,i:integer;
+   pil:string;
+begin
+     textbackground(1);
+     clrscr;
+     textbackground(white);
+     textcolor(blue);
+     clrscr;
+     if (JumlahData>0)and(JumlahData1>=0) then
+     begin
+          //pil:=0
+          clrscr;
+          gotoxy(34,1);writeln('Data Stok Buku');
+          gotoxy(34,2);writeln('==============');
+          //             00000000001111111111222222222233333333334444444444555555555566666666667777777777
+          //             12345678901234567890123456789012345678901234567890123456789012345678901234567890
+          //                 | 12345678 | 12345678901234 | 12345678 | 1234567890123 | 1234567890123 |
+          gotoxy(5,4);write('+======================================================================+');
+          gotoxy(5,5);write('!   Kode   !   Judul Buku   !   Genre  !   Pengarang   !     Harga     !');
+          gotoxy(5,6);write('+----------------------------------------------------------------------+');
+          for i:=1 to JumlahData do
+          begin
+                j:=1;
+                if(JumlahData<page)then
+                   page:=JumlahData;
+                for i:=a to page do
+                begin
+                     gotoxy(5,j+6);writeln('!');
+                     gotoxy(7,j+6);writeln(B[i].Kode);
+                     gotoxy(16,j+6);writeln('!');
+                     gotoxy(18,j+6);writeln(upcase(B[i].Judul));
+                     gotoxy(33,j+6);writeln('!');
+                     gotoxy(35,j+6);writeln(upcase(B[i].Genre));
+                     gotoxy(44,j+6);writeln('!');
+                     gotoxy(46,j+6);writeln(upcase(B[i].Pengarang));
+                     gotoxy(60,j+6);writeln('!');
+                     gotoxy(62,j+6);writeln('Rp.',B[i].Harga);
+                     gotoxy(76,j+6);writeln('!');
+                     j:=j+1;
+                end;
+                gotoxy(5,j+6);
+                write('------------------------------------------------------------------------');
+                gotoxy(28,14);writeln('Terdapat ',JumlahData,' data tersimpan');
+                gotoxy(24,15);writeln('Menampilkan data ke ',a,' hingga ke ',page)  ;
+                gotoxy(14,19);writeln('next page (1)')  ;
+                gotoxy(52,19);writeln('provious page (2)');
+                gotoxy(29,21);writeln('0. untuk ke menu utama');
+                repeat
+                      gotoxy(34,23);write('pilihan : ');readln(pil);
+                      val(pil,n,code);
+                      if(code<>0)then
+                      begin
+                           writeln('Masukan angka !');
+                      end;
+                until(code=0);
+                if(n=1)and(page<JumlahData)then
+                begin
+                     clrscr;
+                     LihatData(B,JumlahData,a+5,page+5);
+                exit;
+          end
+          else if(n = 2)and(page-5>0) then
+          begin
+               clrscr;
+               if(page-5=1)then
+                  page:=page+4;
+
+               LihatData(B,JumlahData,a-5,page-5);
+               exit;
+          end
+          else if(n = 0) then
+          begin
+               write('Tekan Enter Untuk Melanjutkan');
+               exit;
+          end
+          else
+          begin
+               writeln('tidak ada data lagi');
+               writeln('JumlahData : ',JumlahData);
+          end;
+          end;
+     end
+     else
+         writeln('Data belum ada');
+     readln;
+     writeln('Tekan Enter Untuk Melanjutkan');readln;
+
+end;
+//--------------------------------Lihat Data------------------------------------
+
+//-------------------------------Validasi Kode----------------------------------
+function validasi_code(kode:string):boolean;
+var
+   i:integer;
+begin
+         validasi_code:=true;
+         i:=1;
+          while (b[i].kode<>kode)and(i<jumlahdata) do
+          i:=i+1;
+
+          if(b[i].kode=kode)then
+          begin
+          validasi_code:=false;
+          end;
+
+end;
+//-------------------------------Validasi Kode----------------------------------
+
+//--------------------------------Tambah Data-----------------------------------
+Procedure TambahData(var B : Buku; var jumlahdata:integer; JumlahData1:integer );
+{I.s . User Memasukkan Data Isian Buku }
+{F.s . Menampilkan data yang telah diisi dan terurut }
+var
+   j:integer;
+   code:string;
+begin
+    textbackground(1);
+     clrscr;
+     textbackground(white);
+     textcolor(blue);
+     clrscr;
+    //jumah data masukkan
+    gotoxy(29,13);write('Masukkan Jumlah data : ');readln(JumlahData1);
+    //Validasi jumlah data Masukkan
+    while (JumlahData1 > MaksB) do
+        begin
+          gotoxy(24,11);write('Data Masukkan Harus 1-30, Ulangi !');readln;
+          gotoxy(24,12);clreol;
+          gotoxy(29,13);write('Masukkan Jumlah data : ');readln(JumlahData1);
+        end;
+    //masukkan data Buku
+    clrscr;
+    if jumlahdata+jumlahdata1>MaksB then
+    begin
+        gotoxy(20,14);writeln('Data Sudah Penuh, Tidak Bisa Ditambah Lagi!')
+    end
+    else
+    begin
+    gotoxy(34,1);writeln('Data Stok Buku');
+    gotoxy(34,2);writeln('==============');
+    //             00000000001111111111222222222233333333334444444444555555555566666666667777777777
+    //             12345678901234567890123456789012345678901234567890123456789012345678901234567890
+    //                 | 12345678 | 12345678901234 | 12345678 | 1234567890123 | 1234567890123 |
+    gotoxy(5,4);write('+======================================================================+');
+    gotoxy(5,5);write('!   Kode   !   Judul Buku   !   Genre  !   Pengarang   !     Harga     !');
+    gotoxy(5,6);write('+----------------------------------------------------------------------+');
+    i:=1;
+    j:=1;
+    for i := jumlahdata+1 to JumlahData1+jumlahdata do
+    begin
+                                     //12345678901234567890123456789012345678901234567890123456789012345678901234567890
+          gotoxy(5,i-jumlahdata+6);writeln('!          !                !          !               ! Rp.           !');
+          gotoxy(7,i-jumlahdata+6);readln(code);
+          while (b[j].kode<>code) and (j<jumlahdata)  do
+          j:=j+1;
+          if(b[j].kode=code)then
+          begin
+          repeat
+          write('Sudah Ada Kode Yang Sama(Ganti)');
+          gotoxy(7,i-jumlahdata+6);readln(code);
+
+          until(b[j].kode<>code)and(validasi_code(code)=true);
+          j:=1;
+          b[i].kode:=code;
+          gotoxy(18,i-jumlahdata+6);readln(B[i].Judul);
+          gotoxy(35,i-jumlahdata+6);readln(B[i].Genre);
+          gotoxy(46,i-jumlahdata+6);readln(B[i].Pengarang);
+          gotoxy(65,i-jumlahdata+6);readln(B[i].Harga);
+           jumlahdata:=jumlahdata+1;
+          
+          end
+          else
+          begin
+          b[i].kode:=code;
+          gotoxy(18,i-jumlahdata+6);readln(B[i].Judul);
+          gotoxy(35,i-jumlahdata+6);readln(B[i].Genre);
+          gotoxy(46,i-jumlahdata+6);readln(B[i].Pengarang);
+          gotoxy(65,i-jumlahdata+6);readln(B[i].Harga);
+          jumlahdata:=jumlahdata+1;
+          end;
+    end;
+    gotoxy(5,i-jumlahdata+8);
+     //12345678901234567890123456789012345678901234567890123456789012345678901234567890
+    write('+----------------------------------------------------------------------+');
+    writeln(jumlahdata);
+    end;
+    gotoxy(29,24);writeln('Tekan Enter Untuk Melanjutkan');readln;
+    readln;
+    end;
+//--------------------------------Tambah Data-----------------------------------
+
+//-------------------------------Hapus Data-------------------------------------
+Procedure HapusData;
+{I.s . User Menghapus Data Isian Buku }
+{F.s . Menampilkan data yang telah diisi dan terurut }
+var
+   kodehapus : string;
+   jawaban             : char ;
+   j                   : integer;
+begin
+     textbackground(1);
+     clrscr;
+     textbackground(white);
+     textcolor(blue);
+     clrscr;
+     if JumlahData>0 then
+     begin
+               gotoxy(24,3);write('Masukan Kode Buku yang Akan diHapus : ');readln(kodehapus);
+               i:=1;
+          while (B[i].Kode<>kodehapus)and(i<JumlahData) do
+          i:=i+1;
+          begin
+          if(B[i].Kode=kodehapus)then
+          begin
+          gotoxy(31,6);write('Data yang akan dihapus : ');
+          gotoxy(31,7);writeln('========================');
+          //             00000000001111111111222222222233333333334444444444555555555566666666667777777777
+          //             12345678901234567890123456789012345678901234567890123456789012345678901234567890
+          //                 | 12345678 | 12345678901234 | 12345678 | 1234567890123 | 1234567890123 |
+          gotoxy(5,10);write('+======================================================================+');
+          gotoxy(5,11);write('!   Kode   !   Judul Buku   !   Genre  !   Pengarang   !     Harga     !');
+          gotoxy(5,12);write('+----------------------------------------------------------------------+');
+          gotoxy(5,i+8);writeln('!');
+          gotoxy(7,i+8);writeln(B[i].Kode);
+          gotoxy(16,i+8);writeln('!');
+          gotoxy(18,i+8);writeln(upcase(B[i].Judul));
+          gotoxy(33,i+8);writeln('!');
+          gotoxy(35,i+8);writeln(upcase(B[i].Genre));
+          gotoxy(44,i+8);writeln('!');
+          gotoxy(46,i+8);writeln(upcase(B[i].Pengarang));
+          gotoxy(60,i+8);writeln('!');
+          gotoxy(62,i+8);writeln('Rp.',B[i].Harga);
+          gotoxy(76,i+8);writeln('!');
+          gotoxy(5,i+9);write('+----------------------------------------------------------------------+');
+          gotoxy(23,21);write('Yakin mau dihapus [Y/T] ? : ');readln(jawaban);
+          if upcase(jawaban)='Y' then
+          begin
+                        for j:=i to JumlahData-1 do
+                        B[j]:=B[j+1];
+                        JumlahData:=JumlahData-1;
+                    end;
+
+               end
+               else
+                   writeln('Data Yang Dihapus Tidak Ditemukan');
+               end;
+     end
+     else
+         writeln('Data kosong');
+         gotoxy(23,24);write('Tekan Enter Untuk Melanjutkan');readln;
+
+end;
+
+
+//-------------------------------Hapus Data-------------------------------------
+
+
+//---------------------------Binary Kode Buku-----------------------------------
+procedure Pencarian(var B : Buku; JumlahData : integer);
+var
+   dicari:string;
+   i,pil:integer;
+
+begin
+     textbackground(1);
+     clrscr;
+     textbackground(white);
+     textcolor(blue);
+     clrscr;
+     clrscr;
+     if JumlahData>0 then
+     begin
+          gotoxy(24,11);write('1. Pencarian berdasarkan Kode');
+          gotoxy(24,12);write('2. Pencarian berdasarkan Judul');
+          gotoxy(26,14);writeln('--------------------------------');
+          gotoxy(27,15);write('pilih pencarian : ');readln(pil);
+          if pil = 1 then
+          begin
+               clrscr;
+               gotoxy(24,11);write('Kode Buku Yang Dicari : ');
+               readln(dicari);
+               i:=1;
+               while(B[i].Kode<>dicari)and(i<JumlahData) do
+                    i:=i+1;
+               if B[i].Kode=dicari then
+               begin
+                    gotoxy(35,4);writeln('Data  Buku');
+                    gotoxy(33,5);writeln('==============');
+                    //             00000000001111111111222222222233333333334444444444555555555566666666667777777777
+                    //             12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                    //                 | 12345678 | 12345678901234 | 12345678 | 1234567890123 | 1234567890123 |
+                    gotoxy(5,7);write('+======================================================================+');
+                    gotoxy(5,8);write('!   Kode   !   Judul Buku   !   Genre  !   Pengarang   !     Harga     !');
+                    gotoxy(5,9);write('+----------------------------------------------------------------------+');
+                                   //12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                    gotoxy(5,10);writeln('!          !                !          !               ! Rp.           !');
+                    gotoxy(7,10);writeln(B[i].Kode);
+                    gotoxy(18,10);writeln(B[i].Judul);
+                    gotoxy(35,10);writeln(B[i].Genre);
+                    gotoxy(46,10);writeln(B[i].Pengarang);
+                    gotoxy(65,10);writeln(B[i].Harga);
+                    gotoxy(5,11);
+                     //12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                    write('+----------------------------------------------------------------------+');
+                    gotoxy(24,14);writeln('Data ditemukan diposisi ke-',i);
+               end
+               else
+               begin
+                   gotoxy(29,14);writeln('Data tidak ditemukan');
+               end;
+          end
+          else if pil=2 then
+          begin
+               clrscr;
+               gotoxy(24,11);write('Nama Buku Yang Dicari : ');readln(dicari);
+               i:=1;
+               while(B[i].Judul<>dicari)and(i<JumlahData) do
+                    i:=i+1;
+               if B[i].Judul=dicari then
+               begin
+                    gotoxy(35,4);writeln('Data  Buku');
+                    gotoxy(33,5);writeln('==============');
+                    //             00000000001111111111222222222233333333334444444444555555555566666666667777777777
+                    //             12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                    //                 | 12345678 | 12345678901234 | 12345678 | 1234567890123 | 1234567890123 |
+                    gotoxy(5,7);write('+======================================================================+');
+                    gotoxy(5,8);write('!   Kode   !   Judul Buku   !   Genre  !   Pengarang   !     Harga     !');
+                    gotoxy(5,9);write('+----------------------------------------------------------------------+');
+                                   //12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                    gotoxy(5,10);writeln('!          !                !          !               ! Rp.           !');
+                    gotoxy(7,10);writeln(B[i].Kode);
+                    gotoxy(18,10);writeln(B[i].Judul);
+                    gotoxy(35,10);writeln(B[i].Genre);
+                    gotoxy(46,10);writeln(B[i].Pengarang);
+                    gotoxy(65,10);writeln(B[i].Harga);
+                    gotoxy(5,11);
+                     //12345678901234567890123456789012345678901234567890123456789012345678901234567890
+                    write('+----------------------------------------------------------------------+');
+                    gotoxy(24,14);writeln('Data ditemukan diposisi ke-',i);
+               end
+               else
+               begin
+                    gotoxy(29,14);writeln('Data tidak ditemukan');
+               end;
+          end;
+     end
+     else
+     begin
+         gotoxy(15,20);writeln('Data kosong, anda tidak bisa melakukan pencarian');
+     end;
+     gotoxy(22,24);writeln('Tekan Enter Untuk Melanjutkan');readln;
+end;
+
+//---------------------------Binary Kode Buku-----------------------------------
+
+//---------------------------------Edit Data------------------------------------
+procedure EditData;
+var
+   Kodeedit:string;
+begin
+     textbackground(1);
+     clrscr;
+     textbackground(white);
+     textcolor(blue);
+     clrscr;
+     gotoxy(19,13);write('Masukan Kode dari data yang akan diedit : ');readln(Kodeedit);
+     i:=1;
+          while(Kodeedit<>B[i].Kode)and(i<JumlahData) do
+                i:=i+1;
+          if B[i].Kode=Kodeedit then
+          begin
+               clrscr;
+               gotoxy(35,4);writeln('Data  Buku');
+               gotoxy(33,5);writeln('==============');
+               //             00000000001111111111222222222233333333334444444444555555555566666666667777777777
+               //             12345678901234567890123456789012345678901234567890123456789012345678901234567890
+               //                 | 12345678 | 12345678901234 | 12345678 | 1234567890123 | 1234567890123 |
+               gotoxy(5,7);write('+======================================================================+');
+               gotoxy(5,8);write('!   Kode   !   Judul Buku   !   Genre  !   Pengarang   !     Harga     !');
+               gotoxy(5,9);write('+----------------------------------------------------------------------+');
+                              //12345678901234567890123456789012345678901234567890123456789012345678901234567890
+               gotoxy(5,10);writeln('!          !                !          !               ! Rp.           !');
+               gotoxy(7,10);writeln(B[i].Kode);
+               gotoxy(18,10);writeln(B[i].Judul);
+               gotoxy(35,10);writeln(B[i].Genre);
+               gotoxy(46,10);writeln(B[i].Pengarang);
+               gotoxy(65,10);writeln(B[i].Harga);
+               gotoxy(5,11);
+                //12345678901234567890123456789012345678901234567890123456789012345678901234567890
+               write('+----------------------------------------------------------------------+');
+               readln;
+
+               gotoxy(29,15);write('Kode Baru      : ');readln(kodeedit);
+               while (b[i].kode<>kodeedit) and (i<jumlahdata)  do
+               i:=i+1;
+               if(b[i].kode=kodeedit)then
+               begin
+                repeat
+                gotoxy(29,16);write('Sudah Ada Kode Yang Sama(Ganti)');
+                gotoxy(29,15);write('Kode Baru      : ');readln(kodeedit);
+
+                 until(b[i].kode<>kodeedit)and(validasi_code(kodeedit)=true);;
+                end;
+               b[i].kode:=kodeedit;
+               gotoxy(29,17);write('Judul Baru     : ');readln(B[i].Judul);
+               gotoxy(29,18);write('Genre Baru     : ');readln(B[i].Genre);
+               gotoxy(29,19);write('Pengarang Baru : ');readln(B[i].Pengarang);
+               gotoxy(29,20);write('Harga Baru     : ');readln(B[i].Harga);
+          end
+          else
+          begin
+               gotoxy(29,11);writeln('Data Buku Tidak Ditemukan');
+               gotoxy(22,24);write('Tekan Enter Untuk Kembali Ke Menu Utama');
+               readln;
+          end;
+end;
+//---------------------------------Edit Data------------------------------------
+
+//------------------------------Urutkan Data------------------------------------
+procedure UrutkanData;
+var
+   pil,i,j,imin:integer;
+   temp:d_Buku;
+begin
+     textbackground(1);
+     clrscr;
+     textbackground(white);
+     textcolor(blue);
+     clrscr;
+     gotoxy(25,12);writeln('1.pengurutan menurut Kode Buku');
+     gotoxy(25,13);writeln('2.pengurutan menurut Judul Buku');
+     gotoxy(26,14);writeln('--------------------------------');
+     gotoxy(27,15);write('pilih pengurutan : ');readln(pil);
+     if(pil=1)then
+     begin
+          gotoxy(19,19);writeln('Mulai Pengurutan Berdasarkan Kode Buku.....');
+          for i:=1 to JumlahData-1 do
+          begin
+               imin:=i;
+               for j:=i+1 to JumlahData do
+               begin
+                    if B[imin].Kode>B[j].Kode then
+                       imin:=j;
+               end;
+               temp:=B[i];
+               B[i]:=B[imin];
+               B[imin]:=temp;
+          end;
+     gotoxy(15,22);writeln('Pengurutan Selesai, Tekan Enter Untuk Melanjutkan');
+     readln;
+     end
+     else
+     if (pil=2) then
+     begin
+          gotoxy(19,19);writeln('Mulai Pengurutan Berdasarkan Judul Buku..... ');
+          for i:=1 to JumlahData-1 do
+          begin
+               imin:=i;
+               for j:=i+1 to JumlahData do
+               begin
+                     if B[imin].Judul>B[j].Judul then
+                        imin:=j;
+               end;
+               temp:=B[i];
+               B[i]:=B[imin];
+               B[imin]:=temp;
+          end;
+     gotoxy(15,22);writeln('Pengurutan Selesai, Teken Enter Untuk Melanjutkan');
+     readln;
+     end
+     else
+     begin
+          gotoxy(19,19);write('Pilihan Yang Anda Masukan Salah!');readln;
+     end;
+end;
+//------------------------------Urutkan Data------------------------------------
+
+
+//-------------------------------Baca Data File---------------------------------
+procedure BacaData;
+var
+   f:file of d_Buku;
+   databaru:d_Buku;
+begin
+     textbackground(1);
+     clrscr;
+     textbackground(white);
+     textcolor(blue);
+     gotoxy(26,11);writeln('Pembacaan Data Dari File...');
+     assign(f,'Buku.dat');
+     {I-}
+     reset(f);
+     {I+}
+     if ioresult=0 then
+     begin
+          JumlahData:=0;
+          while eof(f)=false do
+          begin
+               read(f,databaru);
+               if JumlahData<MaksB then
+               begin
+                    JumlahData:=JumlahData+1;
+                    B[JumlahData]:=databaru;
+               end;
+          end;
+          close(f);
+          writeln;
+          gotoxy(12,14);writeln('Pembacaan Data Selesai. Terbaca ',JumlahData,' data buku dalam file...');
+          readln;
+     end
+     else
+     begin
+          writeln('File tidak ditemukan');
+          readln;
+     end;
+end;
+//-------------------------------Baca Data File---------------------------------
+
+//--------------------------------Simpan Data-----------------------------------
+procedure simpan_data_ke_file;
+var
+   f:file of d_Buku;
+   i:integer;
+   //namafile:string;
+begin
+     textbackground(1);
+     clrscr;
+     textbackground(white);
+     textcolor(blue);
+     gotoxy(25,22);writeln('Penyimpanan data ke file : ');
+     //write('Buku : ');readln(Buku);  //jika ingin menulis sendiri nama file
+     //assign(f,namafile);
+     assign(f,'Buku.dat');
+     rewrite(f);
+     for i:=1 to JumlahData do
+         write(f,B[i]);
+     close(f);
+     gotoxy(25,23);writeln('Data telah disimpan ke file');
+     readln;
+end;
+//--------------------------------Simpan Data-----------------------------------
+
+
+//-------------------------------Filter Data------------------------------------
+ procedure filter_data;
+var
+   cari:string;
+   cek,i:integer;
+begin
+   clrscr;
+   gotoxy(23,1);writeln('--------------FILTER DATA--------------');
+   gotoxy(23,2);write('Filter Data Berdasarkan Judul : '); readln(cari);
+
+   //Writeln();
+   cek:=1;
+   for i:=1 to JumlahData do
+   begin
+        If Pos(cari,B[i].Judul) <> 0 then
+        begin
+         gotoxy(35,4);writeln('Data  Buku');
+               gotoxy(33,5);writeln('==============');
+               //             00000000001111111111222222222233333333334444444444555555555566666666667777777777
+               //             12345678901234567890123456789012345678901234567890123456789012345678901234567890
+               //                 | 12345678 | 12345678901234 | 12345678 | 1234567890123 | 1234567890123 |
+               gotoxy(5,7);write('+======================================================================+');
+               gotoxy(5,8);write('!   Kode   !   Judul Buku   !   Genre  !   Pengarang   !     Harga     !');
+               gotoxy(5,9);write('+----------------------------------------------------------------------+');
+                              //12345678901234567890123456789012345678901234567890123456789012345678901234567890
+               gotoxy(5,cek+9);writeln('!          !                !          !               ! Rp.           !');
+               gotoxy(7,cek+9);writeln(B[i].Kode);
+               gotoxy(18,cek+9);writeln(B[i].Judul);
+               gotoxy(35,cek+9);writeln(B[i].Genre);
+               gotoxy(46,cek+9);writeln(B[i].Pengarang);
+               gotoxy(65,cek+9);writeln(B[i].Harga);
+        cek:=cek+1;
+        end;
+   end;
+   if(cek=1)then
+   begin
+        gotoxy(22,21);writeln('Data Tidak Ditemukan');
+   end;
+   gotoxy(5,cek+9);write('+----------------------------------------------------------------------+');
+   gotoxy(22,24);write('Tekan Enter Untuk Kembali Ke Menu Utama');
+   readln;
+end;
+//-------------------------------Filter Data------------------------------------
+
+//---------------------------------Program Utama--------------------------------
+begin
+
+
+     BacaData;
+     repeat
+                MenuPilihan(Pilih);
+                case Pilih of
+                1 : LihatData(B,JumlahData,1,5);
+                2 : Pencarian (B,JumlahData);
+                3 : TambahData(B,Jumlahdata,JumlahData1);
+                4 : HapusData;
+                5 : EditData;
+                6 : Filter_Data;
+                7 : UrutkanData;
+                end;
+          until (pilih=0);
+     simpan_data_ke_file; //otomatis save file
+
+end.
